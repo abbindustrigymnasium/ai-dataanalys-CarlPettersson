@@ -1,0 +1,9 @@
+﻿  main.cpp
+C:\Users\S9carpet\source\repos\AI_project\AI_project\image.hpp(191,1): warning C4244: '*=': conversion from 'float' to 'LONG', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\image.hpp(207,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\image.hpp(229,1): warning C4244: '*=': conversion from 'float' to 'LONG', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\image.hpp(244,1): warning C4244: '+=': conversion from 'float' to 'int', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\main.cpp(13,15): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\main.cpp(26,48): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+C:\Users\S9carpet\source\repos\AI_project\AI_project\main.cpp(26,40): warning C4244: 'argument': conversion from 'double' to 'float', possible loss of data
+  AI_project.vcxproj -> C:\Users\S9carpet\source\repos\AI_project\Debug\AI_project.exe
