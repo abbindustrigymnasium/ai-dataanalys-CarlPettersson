@@ -10,17 +10,17 @@ namespace perlin {
 		utility methods
 	*/
 
-	// fade function: f(t) = 6*t^5 - 15*t^4 + 10*t^3 (optimize for fewer multiplications)
+	// fade function: f(t) = 6*t^5 - 15*t^4 + 10*t^3 (optimize for fewer multiplications)    Make it smooth(floating point) curve and not jagged(integer) between different gradients
 	inline float fade(float t) {
 		return t * t * t * (t * (t * 6 - 15) + 10);
 	}
 
-	// linear interpolation
+	// linear interpolation				straight line between 2 points
 	inline float lerp(float t, float a, float b) {
 		return a + t * (b - a);
 	}
 
-	// map function
+	// map function map value in one range to another in another range
 	inline float map(float val, float ogMin, float ogMax, float newMin, float newMax) {
 		// get proportion in original range
 		float prop = (val - ogMin) / (ogMax - ogMin);
@@ -88,37 +88,6 @@ namespace perlin {
 			}
 		}
 
-		/*
-			perlin methods
-		*/
-
-		// 1D Perlin Noise
-		float noise1D(float x) {
-			// find smallest point of interval containing target
-			int xi = (int)(std::floorf(x)) & 255; // = % 256
-
-			// get decimal value of each component
-			x -= std::floorf(x);
-
-			// get smooth value from fade function (becomes weight for each dimension)
-			float sx = fade(x);
-
-			// get hash value for all neighboring points
-			unsigned char a, b;
-			a = p[xi];
-			b = p[xi + 1];
-
-			// get weighted average
-			float avg = lerp(
-				sx,
-				grad(a, x, 0, 0),
-				grad(a, x - 1, 0, 0)
-			);
-
-			// return avg mapped from [-1, 1] (theoretically) to [0, 1]
-			return map(avg, -1, 1, 0, 1);
-		}
-
 		// 2D Perlin Noise
 		float noise2D(float x, float y) {
 			// find smallest point of square containing target
@@ -159,94 +128,7 @@ namespace perlin {
 			return map(avg, -1, 1, 0, 1);
 		}
 
-		// 3D Perlin NOise
-		float noise3D(float x, float y, float z) {
-			// find smallest point of cube containing target
-			int xi = (int)(std::floorf(x)) & 255;
-			int yi = (int)(std::floorf(y)) & 255;
-			int zi = (int)(std::floorf(z)) & 255;
-
-			// get decimal value of each component
-			x -= std::floorf(x);
-			y -= std::floorf(y);
-			z -= std::floorf(z);
-
-			// get smooth value from fade function (becomes weight for each dimension)
-			float sx = fade(x);
-			float sy = fade(y);
-			float sz = fade(z);
-
-			// get hash value for all neighboring points
-			unsigned char aaa, aba, aab, abb, baa, bba, bab, bbb;
-			aaa = p[p[p[xi] + yi] + zi];
-			aba = p[p[p[xi] + yi + 1] + zi];
-			aab = p[p[p[xi] + yi] + zi + 1];
-			abb = p[p[p[xi] + yi + 1] + zi + 1];
-			baa = p[p[p[xi + 1] + yi] + zi];
-			bba = p[p[p[xi + 1] + yi + 1] + zi];
-			bab = p[p[p[xi + 1] + yi] + zi + 1];
-			bbb = p[p[p[xi + 1] + yi + 1] + zi + 1];
-
-			// get weighted average
-			float avg = lerp(
-				sz,
-				lerp( // "front"
-					sy,
-					lerp( // "top"
-						sx,
-						grad(aaa, x, y, z),
-						grad(baa, x - 1, y, z)
-					),
-					lerp( // "bottom"
-						sx,
-						grad(aba, x, y - 1, z),
-						grad(bba, x - 1, y - 1, z)
-					)
-				),
-				lerp( // "rear"
-					sy,
-					lerp( // "top"
-						sx,
-						grad(aab, x, y, z - 1),
-						grad(bab, x - 1, y, z)
-					),
-					lerp( // "bottom"
-						sx,
-						grad(abb, x, y - 1, z - 1),
-						grad(bbb, x - 1, y - 1, z - 1)
-					)
-				)
-			);
-
-			// return avg mapped from [-1, 1] (theoretically) to [0, 1]
-			return map(avg, -1, 1, 0, 1);
-		}
-
-		/*
-			accumulated noise
-		*/
-
-		// 1D accumulated noise
-		float accumulatedNoise1D(float x, int octaves = 8, float lacunarity = 2.0f, float gain = 0.5f) {
-			float result = 0.0f;
-			float amplitude = 1.0f;
-			float frequency = 1.0f;
-			float maxVal = 0.0f; // used to normalize result
-
-			for (; octaves > 0; octaves--) {
-				result += noise1D(x * frequency) * amplitude;
-
-				maxVal += amplitude;
-
-				amplitude *= gain;
-				frequency *= lacunarity;
-			}
-
-			// return normalized result
-			return result / maxVal;
-		}
-
-		// 2D accumulated noise
+		// 2D accumulated noise     Get multiple results then divide them by number of results
 		float accumulatedNoise2D(float x, float y, int octaves = 8, float lacunarity = 2.0f, float gain = 0.5f) {
 			float result = 0.0f;
 			float amplitude = 1.0f;
@@ -266,25 +148,6 @@ namespace perlin {
 			return result / maxVal;
 		}
 
-		// 3D accumulated noise
-		float accumulatedNoise2D(float x, float y, float z, int octaves = 8, float lacunarity = 2.0f, float gain = 0.5f) {
-			float result = 0.0f;
-			float amplitude = 1.0f;
-			float frequency = 1.0f;
-			float maxVal = 0.0f; // used to normalize result
-
-			for (; octaves > 0; octaves--) {
-				result += noise3D(x * frequency, y * frequency, z * frequency) * amplitude;
-
-				maxVal += amplitude;
-
-				amplitude *= gain;
-				frequency *= lacunarity;
-			}
-
-			// return normalized result
-			return result / maxVal;
-		}
 	};
 }
 
